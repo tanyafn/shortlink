@@ -1,3 +1,3 @@
 class TestModel < ActiveRecord::Base
-  permalink :permalink
+  shortlink :shortlink
 end
