@@ -21,6 +21,9 @@ module Shortlink
   end
 
   module LocalInstanceMethods
+    def self.included(base)
+      puts base.inspect
+    end
     def set_shortlink
       sequence = self.class.generate_shortlink
 
