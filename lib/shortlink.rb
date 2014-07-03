@@ -8,12 +8,12 @@ module Shortlink
   module ClassMethods
     DEFAULT_SETTINGS = { length: 6, prefix: nil }
 
-    def shortlink column_name, options = {}
+    def shortlink(column_name, options = {})
       include Shortlink::LocalInstanceMethods
 
-      settings = options.merge(DEFAULT_SETTINGS).extract!(*DEFAULT_SETTINGS.keys)
+      opts = options.merge(DEFAULT_SETTINGS).extract!(*DEFAULT_SETTINGS.keys)
 
-      before_validation { set_shortlink(column_name, settings) }
+      before_validation { set_shortlink(column_name, opts) }
     end 
   end
 
@@ -30,7 +30,7 @@ module Shortlink
 
     def generate_shortlink length, prefix
       chars = [('a'..'z'), ('A'..'Z'), (0..9)].flat_map(&:to_a)
-      prefix ? "#{prefix}-#{chars.sample(length).join}": chars.sample(length).join
+      prefix ? "#{prefix}#{chars.sample(length).join}": chars.sample(length).join
     end   
   end
 end
