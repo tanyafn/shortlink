@@ -1,17 +1,31 @@
 require 'spec_helper'
 
 describe 'Shortlink' do
-  describe '#set_permalink' do
-    let!(:existing_permalink){ TestModel.create().shortlink }
-    let!(:non_existing_permalink){ existing_permalink.reverse }
+  describe '#shortlink' do
+    let(:obj){ TestModel.create }
 
-    before { allow(TestModel).to receive(:generate_permalink).and_return(existing_permalink, non_existing_permalink) }
+    context "with default options" do
+      subject{ obj.shortlink }
 
-    let(:new_job){ TestModel.create }
+      it{ expect(subject).to be_a(String) }
+      it{ expect(subject.length).to eq(6) }
+    end
 
-    it "sets unique permalink" do
-      expect(new_job.shortlink) == non_existing_permalink
+    context "with custom options" do
+      subject{ obj.configured_shortlink }
+
+      it{ expect(subject).to be_a(String) }
+      it{ is_expected.to start_with('prefix') }
+      it{ expect(subject.length).to eq(15) }
+    end
+
+    it 'saves unique value' do
+      existing_permalink = TestModel.create.shortlink
+      not_existing_permalink = existing_permalink.reverse
+
+      allow_any_instance_of(TestModel).to receive(:generate_shortlink).and_return(existing_permalink, not_existing_permalink)
+
+      expect(obj.shortlink).to eq(not_existing_permalink)
     end
   end
-  
 end
