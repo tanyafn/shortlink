@@ -13,6 +13,8 @@ module Shortlink
 
       opts = DEFAULT_SETTINGS.merge(options).extract!(*DEFAULT_SETTINGS.keys)
 
+      define_method("randomize_#{column_name}") { set_shortlink(column_name, opts) }
+        
       before_validation { set_shortlink(column_name, opts) }
     end 
   end
