@@ -6,14 +6,18 @@ module Shortlink
   extend ActiveSupport::Concern
 
   module ClassMethods
-    DEFAULT_SETTINGS = { length: 6, prefix: nil }
+    SHORTLINK_DEFAULTS = { length: 6, prefix: nil }
 
     def shortlink(column_name, options = {})
       include Shortlink::LocalInstanceMethods
 
-      opts = DEFAULT_SETTINGS.merge(options).extract!(*DEFAULT_SETTINGS.keys)
+      opts = SHORTLINK_DEFAULTS.merge(options).extract!(*SHORTLINK_DEFAULTS.keys)
 
       define_method("randomize_#{column_name}") { set_shortlink(column_name, opts) }
+      
+      define_method "randomize_#{column_name}!" do 
+        update_column(column_name, send("randomize_#{column_name}"))
+      end
         
       before_validation { set_shortlink(column_name, opts) }
     end 
@@ -28,6 +32,7 @@ module Shortlink
       end
       
       self.send("#{shortlink_field}=", sequence)
+      sequence
     end
 
     def generate_shortlink(length, prefix)
